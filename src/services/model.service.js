@@ -1,34 +1,10 @@
-import * as THREE from 'three'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import fs from 'fs'
-
 import { Model } from '../schema/model.schema.js'
-
-const extractVerticesAndPolygons = (file) => {
-  const data = fs.readFileSync(file.path, 'utf8')
-  const loader = new OBJLoader()
-  const object = loader.parse(data)
-
-  const vertices = []
-  const polygons = []
-
-  object.traverse(function (child) {
-    if (child instanceof THREE.Mesh) {
-      const geometry = new THREE.Geometry().fromBufferGeometry(child.geometry)
-      vertices.push(...geometry.vertices)
-      polygons.push(...geometry.faces)
-    }
-  })
-  return { vertices, polygons }
-}
 
 export const upload3DModel = async (model, modelFiles, imagesFiles) => {
   const upload3dModel = {
     ...model,
     images: imagesFiles.map((file) => file.path.replace('public', '')),
     model: modelFiles.map((file) => file.path.replace('public', '')),
-    vertices: 2,
-    polygons: 2,
   }
   const createdModel = await Model.create(upload3dModel)
   return createdModel

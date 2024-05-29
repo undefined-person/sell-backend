@@ -31,10 +31,10 @@ router.post(
     check('unwrappedUVs', 'UnwrappedUVs must be a boolean').isBoolean(),
     check('pluginsUsed', 'PluginsUsed must be a boolean').isBoolean(),
     check('readyFor3DPrinting', 'ReadyFor3DPrinting must be a boolean').isBoolean(),
+    check('vertices', 'Vertices must be a number').isNumeric(),
+    check('polygons', 'Polygons must be a number').isNumeric(),
   ],
   async (req, res) => {
-    console.log(req.files)
-
     try {
       const errors = validationResult(req)
       if (!errors.isEmpty()) {
@@ -66,6 +66,8 @@ router.post(
         unwrappedUVs,
         pluginsUsed,
         readyFor3DPrinting,
+        vertices,
+        polygons,
       } = req.body
 
       const modelData = {
@@ -82,7 +84,8 @@ router.post(
         unwrappedUVs,
         pluginsUsed,
         readyFor3DPrinting,
-        imagesFiles,
+        vertices,
+        polygons,
       }
 
       const createdModel = await upload3DModel(modelData, modelFiles, imagesFiles)
