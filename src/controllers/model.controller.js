@@ -1,7 +1,7 @@
 import Router from 'express'
 import { check, validationResult } from 'express-validator'
 import { upload } from '../utils/uploadFile.js'
-import { upload3DModel, delete3DModel, get3DModel, get3DModels, update3DModel } from '../services/model.service.js'
+import { upload3DModel, delete3DModel, get3DModel, get3DModels } from '../services/model.service.js'
 import { isErrorObject } from '../utils/isErrorObject.js'
 import { authMiddleware } from '../middlewares/auth.middleware.js'
 
@@ -33,6 +33,7 @@ router.post(
     check('readyFor3DPrinting', 'ReadyFor3DPrinting must be a boolean').isBoolean(),
     check('vertices', 'Vertices must be a number').isNumeric(),
     check('polygons', 'Polygons must be a number').isNumeric(),
+    check('geometry', 'Geometry must be a string').isString(),
   ],
   async (req, res) => {
     try {
@@ -68,6 +69,7 @@ router.post(
         readyFor3DPrinting,
         vertices,
         polygons,
+        geometry,
       } = req.body
 
       const modelData = {
@@ -86,6 +88,7 @@ router.post(
         readyFor3DPrinting,
         vertices,
         polygons,
+        geometry,
       }
 
       const createdModel = await upload3DModel(modelData, modelFiles, imagesFiles)
@@ -136,22 +139,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params
     await delete3DModel(id)
     res.json({ message: 'Model deleted' })
-  } catch (e) {
-    console.log(e)
-    if (isErrorObject(e)) {
-      res.status(500).json({ message: e.message || 'Server Error' })
-    } else {
-      res.status(500).json({ message: e || 'Server Error' })
-    }
-  }
-})
-
-router.patch('/:id', authMiddleware, async (req, res) => {
-  try {
-    const { id } = req.params
-    const modelData = req.body
-    const updatedModel = await update3DModel(id, modelData)
-    res.json(updatedModel)
   } catch (e) {
     console.log(e)
     if (isErrorObject(e)) {

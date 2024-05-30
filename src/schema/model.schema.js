@@ -1,4 +1,4 @@
-import mongoose, { model } from 'mongoose'
+import mongoose from 'mongoose'
 
 const modelSchema = new mongoose.Schema({
   name: {
@@ -35,7 +35,6 @@ const modelSchema = new mongoose.Schema({
   },
   geometry: {
     type: String,
-    default: 'Polygon mesh',
   },
   polygons: {
     type: Number,

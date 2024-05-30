@@ -7,6 +7,7 @@ import mongoose from 'mongoose'
 
 import authController from './controllers/auth.controller.js'
 import modelController from './controllers/model.controller.js'
+import customerController from './controllers/customer.controller.js'
 
 dotenv.config()
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use('/auth', authController)
 app.use('/model', modelController)
+app.use('/customer', customerController)
 
 mongoose.set('strictQuery', false)
 

@@ -39,17 +39,3 @@ export const get3DModel = async (id) => {
 export const delete3DModel = async (id) => {
   await Model.findByIdAndDelete(id)
 }
-
-export const update3DModel = async (id, modelData) => {
-  const model = await Model.findById(id)
-
-  if (!model) {
-    throw new Error('Model not found')
-  }
-
-  Object.assign(model, modelData)
-
-  await model.save()
-
-  return model
-}

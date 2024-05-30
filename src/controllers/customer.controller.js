@@ -1,8 +1,8 @@
 import Router from 'express'
 import { check, validationResult } from 'express-validator'
 
-import { signIn, signUp } from '../services/auth.service.js'
-import { removeToken, setToken } from '../services/cookie.service.js'
+import { signIn, signUp, buyModel, getCustomersModels } from '../services/customer.service.js'
+import { setToken } from '../services/cookie.service.js'
 import { authMiddleware } from '../middlewares/auth.middleware.js'
 import { isErrorObject } from '../utils/isErrorObject.js'
 
@@ -80,6 +80,43 @@ router.post(
 router.get('/session', authMiddleware, async (req, res) => {
   try {
     res.status(200).json({ session: req.session })
+  } catch (e) {
+    console.log(e)
+    if (isErrorObject(e)) {
+      res.status(500).json({ message: e.message || 'Server Error' })
+    } else {
+      res.status(500).json({ message: e || 'Server Error' })
+    }
+  }
+})
+
+router.post('/buy-model', [check('id', 'Model ID is required').isMongoId()], authMiddleware, async (req, res) => {
+  try {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() })
+    }
+    const { id } = req.body
+    const { userId } = req.session
+    const result = await buyModel(id, userId)
+
+    res.json(result)
+  } catch (e) {
+    console.log(e)
+    if (isErrorObject(e)) {
+      res.status(500).json({ message: e.message || 'Server Error' })
+    } else {
+      res.status(500).json({ message: e || 'Server Error' })
+    }
+  }
+})
+
+router.get('/models', authMiddleware, async (req, res) => {
+  try {
+    const { userId } = req.session
+    const models = await getCustomersModels(userId)
+
+    res.json(models)
   } catch (e) {
     console.log(e)
     if (isErrorObject(e)) {
